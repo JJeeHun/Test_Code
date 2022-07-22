@@ -1,6 +1,14 @@
 import java.io.*;
 import java.util.*;
 
+
+/**
+ * 코드 순서
+ * Main -> 코드를 실행하는 곳에서는 간결하게 -> 함수,Method를 통해서 기능 분리
+ * -> Main에서는 분리한 기능을 조립하는 형태
+ * ex) data initialize Method를 통해 데이터를 retrun(객체) 받아서 사용 할 수 있도록 작성
+ */
+
 public class MAIN {
     public static void main(String[] args) throws IOException {
         /**
@@ -9,16 +17,49 @@ public class MAIN {
          */
         String defaultFilePath = "C:/FFWMS/wordspace/ffwms/FlexFit/online-wms-web/src/main/FFWMS/biz/";
         String[] directoryPath = {"SM/","WM/","RS/","RM/","SMM/","NV/"};
+        String path = "C:/Users/JJH/Desktop/동인/마킹/all.csv";
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path),"euc-kr"));
 
         Arrays.stream(directoryPath).forEach( directoryName -> {
             try {
-                directorySearch(defaultFilePath+directoryName);
+                directorySearch(defaultFilePath+directoryName,bw);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
+        bw.flush();
+        bw.close();
     }
 
+    public static void directorySearch(String directoryPath,BufferedWriter bw) throws IOException {
+        File files = new File(directoryPath);
+        Map<String,Map<Integer, String>> listMap = new TreeMap<>();
+
+        for (File file : files.listFiles()) {
+            oneFileRun(listMap,file);
+        }
+//.xfdl
+
+
+        for(String key : listMap.keySet()) {
+            Map<Integer, String> value = listMap.get(key);
+
+            bw.write("파일명,"+key);
+            bw.newLine();
+            bw.write("함수,라인");
+            bw.newLine();
+
+            output(value,bw);
+
+            bw.newLine();
+//            System.out.println("파일명\t"+key);
+//            System.out.println("함수명\t라인");
+//            print(value);
+//            System.out.println();
+        }
+
+    }
     public static void directorySearch(String directoryPath) throws IOException {
         File files = new File(directoryPath);
         Map<String,Map<Integer, String>> listMap = new TreeMap<>();
